@@ -8,24 +8,11 @@ require("dotenv").config(); // Carrega as variáveis de ambiente do arquivo .env
 
 const app = express();
 
-// Set static path
+// Configuração de CORS para permitir todas as origens
+app.use(cors());
+
 app.use(express.static(path.join(__dirname, "client")));
-
 app.use(bodyParser.json());
-
-const allowedOrigins = process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : ["http://localhost:3000"];
-
-const corsOptions = {
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-};
-
-app.use(cors(corsOptions)); // Use o middleware cors com as opções configuradas
 
 const publicVapidKey = "BGzhoR-UB7WPENnX8GsiKD90O8hLL7j8EPNL3ERqEiUUw1go74KBLCbiInuD_oamyCI5AjtScd2h8fqifk9fpjA"; // REPLACE_WITH_YOUR_KEY
 const privateVapidKey = process.env.PRIVATE_VAPID_KEY;
@@ -51,14 +38,21 @@ const push = new PushNotifications(settings);
 let subscriptions = [];
 
 app.post("/subscribe", (req, res) => {
-  // Get pushSubscription object
-  const subscription = req.body;
+  try {
+    const subscription = req.body;
 
-  // Add subscription to the list
-  subscriptions.push(subscription);
+    // Verifique se a subscription é válida
+    if (!subscription || !subscription.endpoint) {
+      throw new Error("Invalid subscription object");
+    }
 
-  // Send 201 - resource created
-  res.status(201).json({});
+    subscriptions.push(subscription);
+
+    res.status(201).json({});
+  } catch (err) {
+    console.error("Failed to subscribe:", err);
+    res.status(500).json({ error: "Failed to subscribe" });
+  }
 });
 
 app.get("/", (req, res) => {
@@ -75,7 +69,7 @@ const port = process.env.PORT || 3000;
 
 app.listen(port, () => console.log(`Server started on port ${port}`));
 
-// Function to send notifications to all subscriptions
+// Função para enviar notificações para todas as assinaturas
 const sendNotification = () => {
   const payload = { title: "Notificação enviada pelo servidor" };
   subscriptions.forEach(subscription => {
@@ -89,5 +83,5 @@ const sendNotification = () => {
   });
 };
 
-// Send notifications every 10 seconds
+// Enviar notificações a cada 10 segundos
 setInterval(sendNotification, 10000);
