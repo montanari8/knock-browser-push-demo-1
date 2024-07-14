@@ -1,7 +1,7 @@
 const publicVapidKey = "BGzhoR-UB7WPENnX8GsiKD90O8hLL7j8EPNL3ERqEiUUw1go74KBLCbiInuD_oamyCI5AjtScd2h8fqifk9fpjA"; // REPLACE_WITH_YOUR_KEY
 
 // Use a URL base da API a partir de uma variável de ambiente ou um valor padrão
-const apiBaseUrl = "https://knock-browser-push-demo-1.onrender.com/" || "http://localhost:3000";
+const apiBaseUrl = "https://knock-browser-push-demo-1.onrender.com" || "http://localhost:3000";
 
 // Check for service worker
 if ("serviceWorker" in navigator) {
