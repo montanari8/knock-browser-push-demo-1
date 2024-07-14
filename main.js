@@ -1,5 +1,8 @@
 const publicVapidKey = "BGzhoR-UB7WPENnX8GsiKD90O8hLL7j8EPNL3ERqEiUUw1go74KBLCbiInuD_oamyCI5AjtScd2h8fqifk9fpjA"; // REPLACE_WITH_YOUR_KEY
 
+// Use a URL base da API a partir de uma variável de ambiente ou um valor padrão
+const apiBaseUrl = process.env.API_BASE_URL || "http://localhost:3000";
+
 // Check for service worker
 if ("serviceWorker" in navigator) {
   send().catch((err) => console.error(err));
@@ -24,7 +27,7 @@ async function send() {
 
   // Send Push Notification
   console.log("Sending Push...");
-  await fetch("http://localhost:3000/subscribe", {
+  await fetch(`${apiBaseUrl}/subscribe`, {
     method: "POST",
     body: JSON.stringify(subscription),
     headers: {

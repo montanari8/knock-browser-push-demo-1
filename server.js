@@ -12,7 +12,20 @@ const app = express();
 app.use(express.static(path.join(__dirname, "client")));
 
 app.use(bodyParser.json());
-app.use(cors()); // Use o middleware cors para lidar com CORS
+
+const allowedOrigins = process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : ["http://localhost:3000"];
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+};
+
+app.use(cors(corsOptions)); // Use o middleware cors com as opções configuradas
 
 const publicVapidKey = "BGzhoR-UB7WPENnX8GsiKD90O8hLL7j8EPNL3ERqEiUUw1go74KBLCbiInuD_oamyCI5AjtScd2h8fqifk9fpjA"; // REPLACE_WITH_YOUR_KEY
 const privateVapidKey = process.env.PRIVATE_VAPID_KEY;
@@ -58,7 +71,7 @@ app.get("/sw.js", (req, res) => {
   res.sendFile(__dirname + "/sw.js");
 });
 
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 app.listen(port, () => console.log(`Server started on port ${port}`));
 
