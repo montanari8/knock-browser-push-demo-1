@@ -3,9 +3,8 @@ const webpush = require("web-push");
 const bodyParser = require("body-parser");
 const path = require("path");
 const PushNotifications = require("node-pushnotifications");
-require("dotenv").config();
-
-
+const cors = require("cors");
+require("dotenv").config(); // Carrega as variáveis de ambiente do arquivo .env
 
 const app = express();
 
@@ -13,30 +12,11 @@ const app = express();
 app.use(express.static(path.join(__dirname, "client")));
 
 app.use(bodyParser.json());
-app.use(function (req, res, next) {
-  // Website you wish to allow to connect
-  res.setHeader("Access-Control-Allow-Origin", "*");
+app.use(cors()); // Use o middleware cors para lidar com CORS
 
-  // Request methods you wish to allow
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET, POST, OPTIONS, PUT, PATCH, DELETE"
-  );
-
-  // Request headers you wish to allow
-  res.setHeader("Access-Control-Allow-Headers", "*");
-
-  // Set to true if you need the website to include cookies in the requests sent
-  // to the API (e.g. in case you use sessions)
-  res.setHeader("Access-Control-Allow-Credentials", true);
-
-  // Pass to next layer of middleware
-  next();
-});
-
-const publicVapidKey = "BGzhoR-UB7WPENnX8GsiKD90O8hLL7j8EPNL3ERqEiUUw1go74KBLCbiInuD_oamyCI5AjtScd2h8fqifk9fpjA"; 
-const privateVapidKey = process.env.privateVapidKey;
-const email = process.env.email;
+const publicVapidKey = "BGzhoR-UB7WPENnX8GsiKD90O8hLL7j8EPNL3ERqEiUUw1go74KBLCbiInuD_oamyCI5AjtScd2h8fqifk9fpjA"; // REPLACE_WITH_YOUR_KEY
+const privateVapidKey = process.env.PRIVATE_VAPID_KEY;
+const email = process.env.EMAIL;
 
 const settings = {
   web: {
